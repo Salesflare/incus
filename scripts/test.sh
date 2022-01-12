@@ -3,7 +3,7 @@
 set -e
 
 start_incus() {
-    incus -conf="$GOPATH/bin/" &
+    incus -conf="./scripts/test_config" &
     INCUSPID=$!
 }
 

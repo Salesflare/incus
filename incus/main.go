@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Imgur/incus"
+	"github.com/Salesflare/incus"
 	"github.com/spf13/viper"
 )
 

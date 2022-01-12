@@ -6,6 +6,7 @@ Incus [![Build Status](https://travis-ci.org/Imgur/incus.svg?branch=master)](htt
 Middleware for distributing messages via websockets, long polling, and push notifications
 
 ## Features
+
 * Websocket authentication and management
 * Long Poll fall back
 * iOS push notifications support through APNS
@@ -24,8 +25,7 @@ Middleware for distributing messages via websockets, long polling, and push noti
 
 #### JavaScript: incus.js
 
-The [incus.js](https://www.npmjs.com/package/incusjs) front-end npm browserified module is provided for consuming WebSocket events in the Browser or server-side. Self-contained, minified downloads [are also available](https://github.com/Imgur/incusjs/releases). 
-
+The [incus.js](https://www.npmjs.com/package/incusjs) front-end npm browserified module is provided for consuming WebSocket events in the Browser or server-side. Self-contained, minified downloads [are also available](https://github.com/Imgur/incusjs/releases).
 
 ### Application to a web browser
 
@@ -49,18 +49,20 @@ To send events to Incus from your webapp you need to publish a json formated str
 ```
 
 the command is used to route the message to the correct user.
+
 * if user and page are both unset the message object will be sent to all users
 * if both user and page are set the message object will be sent to that user on that page
 * if just user is set, the message object will be sent to all sockets owned by the user identified by UID
 * if just page is set, the message object will be sent to all sockets whose page matches the page identifier
 
+### Push notifications
 
-### Push notifications 
 To send push notifications from your app, you need to push a json formated string to a **Redis list**. The list key is configurable but defaults to `Incus_Queue`
 
 Android and iOS have slightly different schemas for sending push notifications.
 
-#### iOS:
+#### iOS
+
 ```Javascript
 {
     "command" : {
@@ -83,9 +85,9 @@ Android and iOS have slightly different schemas for sending push notifications.
 
 Notes:
 
-  * At this time, dictionary APNS alerts are not supported.
+* At this time, dictionary APNS alerts are not supported.
 
-#### Android:
+#### Android
 
 Multiple registration ids can be listed in the same command
 
@@ -136,11 +138,12 @@ Multiple registration ids can be listed in the same command
 
 #### APNS and GCM errors
 
-Incus does **not** interact with the [APNS Feedback Service](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/CommunicatingWIthAPS.html#//apple_ref/doc/uid/TP40008194-CH101-SW3). You should follow the APNS' guidelines on failed push attempts. They require querying their feedback service daily to find bad device tokens. 
+Incus does **not** interact with the [APNS Feedback Service](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/CommunicatingWIthAPS.html#//apple_ref/doc/uid/TP40008194-CH101-SW3). You should follow the APNS' guidelines on failed push attempts. They require querying their feedback service daily to find bad device tokens.
 
-The GCM service does not offer a feedback service. When a push fails, Incus will add all relevant information to an error list in Redis (defaults to `Incus_Android_Error_Queue`). This should be used to remove bad registration ids from your app. 
+The GCM service does not offer a feedback service. When a push fails, Incus will add all relevant information to an error list in Redis (defaults to `Incus_Android_Error_Queue`). This should be used to remove bad registration ids from your app.
 
 ## Installation
+
 ### Method 1: Docker
 
 * Install [Docker](http://docs.docker.com/engine/installation/#installation)
@@ -183,18 +186,21 @@ docker run incus
 ```
 
 ### Method 2: Source
-Install GO: https://golang.org/doc/install
+
+Install GO: <https://golang.org/doc/install>
 
 Clone the repo:
+
 ```Shell
-mkdir $GOPATH/src/github.com/Imgur/
-cd $GOPATH/src/github.com/Imgur/
-git clone git@github.com:Imgur/incus.git
+mkdir $GOPATH/src/github.com/Salesflare/
+cd $GOPATH/src/github.com/Salesflare/
+git clone git@github.com:Salesflare/incus.git
 ```
 
 To Install:
+
 ```Shell
-cd $GOPATH/src/github.com/Imgur/incus
+cd $GOPATH/src/github.com/Salesflare/incus
 go get -v ./...
 go install -v ./incus
 cp $GOPATH/bin/incus /usr/sbin/incus
@@ -205,12 +211,15 @@ touch /var/log/incus.log
 ```
 
 Starting, Stopping, Restarting incus:
+
 ```Shell
 sudo /etc/init.d/incus start
 sudo /etc/init.d/incus stop
 sudo /etc/init.d/incus restart
 ```
+
 ## Configuration
+
 Incus needs to be restarted after any configuration change.
 
 #### CLIENT_BROADCASTS
@@ -224,6 +233,7 @@ Incus needs to be restarted after any configuration change.
 Default: true
 
 _________
+
 #### LISTENING_PORT
 
 This value controls the port that Incus binds to (TCP).
@@ -231,6 +241,7 @@ This value controls the port that Incus binds to (TCP).
 Default: 4000
 
 _________
+
 #### CONNECTION_TIMEOUT (unstable)
 
 This value controls how long TCP connections are held open for.
@@ -244,6 +255,7 @@ This value controls how long TCP connections are held open for.
 Default: 0
 
 _________
+
 #### LOG_LEVEL
 
 **debug**
@@ -255,6 +267,7 @@ _________
 Default: debug
 
 _________
+
 #### REDIS_PORT_6379_TCP_ADDR
 
 This value controls the TCP address (or hostname) to connect to Redis.
@@ -264,6 +277,7 @@ Note: The variable name is always REDIS_PORT_6379_TCP_ADDR even if the port is n
 Default: 127.0.0.1
 
 _________
+
 #### REDIS_PORT_6379_TCP_PORT
 
 This value controls the TCP port to connect to Redis.
@@ -273,6 +287,7 @@ Note: The variable name is always REDIS_PORT_6379_TCP_PORT even if the port is n
 Default: 6379
 
 _________
+
 #### REDIS_MESSAGE_CHANNEL
 
 This value controls the Redis PubSub channel to use.
@@ -280,6 +295,7 @@ This value controls the Redis PubSub channel to use.
 Default: Incus
 
 _________
+
 #### TLS_ENABLED
 
 This value controls whether the server will also listen on a TLS-enabled port.
@@ -293,6 +309,7 @@ This value controls whether the server will also listen on a TLS-enabled port.
 Default: false
 
 _________
+
 #### TLS_PORT
 
 This value controls what TCP port is exposed when using TLS
@@ -300,6 +317,7 @@ This value controls what TCP port is exposed when using TLS
 Default: 443
 
 _________
+
 #### CERT_FILE
 
 This value controls what X.509 certificate is offered to clients connecting on the TLS port. The certificate is expected in PEM format. The value is a path name resolved relative to the working directory of Incus.
@@ -307,6 +325,7 @@ This value controls what X.509 certificate is offered to clients connecting on t
 Default: cert.pem
 
 _________
+
 #### KEY_FILE
 
 This value controls what X.509 private key is used for decrypting the TLS traffic. The key is expected in PEM format.
@@ -314,6 +333,7 @@ This value controls what X.509 private key is used for decrypting the TLS traffi
 Default: key.pem
 
 _________
+
 #### APNS_ENABLED
 
 This value controls whether the server will listen for and send iOS push notifications
@@ -327,7 +347,9 @@ This value controls whether the server will listen for and send iOS push notific
 Default: false
 
 _________
+
 #### APNS_[BUILD]_CERT
+
 Where [BUILD] is one of: DEVELOPMENT, STORE, ENTERPRISE, or BETA
 
 This value controls what APNS granted cert the server will use when calling the APNS API. Each build environment has its own instance of this configuration variable.
@@ -335,7 +357,9 @@ This value controls what APNS granted cert the server will use when calling the 
 Default: myapnsappcert.pem
 
 _________
+
 #### APNS_[BUILD]_PRIVATE_KEY
+
 Where [BUILD] is one of: DEVELOPMENT, STORE, ENTERPRISE, or BETA
 
 This value controls what APNS granted private key the server will use when calling the APNS API. Each build environment has its own instance of this configuration variable.
@@ -343,7 +367,9 @@ This value controls what APNS granted private key the server will use when calli
 Default: myapnsappprivatekey.pem
 
 _________
+
 #### APNS_[BUILD]_URL
+
 Where [BUILD] is one of: DEVELOPMENT, STORE, ENTERPRISE, or BETA
 
 This value controls what APNS url is used when calling the APNS API. Each build environment has its own instance of this configuration variable.
@@ -353,6 +379,7 @@ Default: gateway.push.apple.com:2195
 APNS_DEVELOPMENT_URL defaults to gateway.sandbox.push.apple.com:2195
 
 _________
+
 #### IOS_PUSH_SOUND
 
 This value controls what sound plays on push notification receive.
@@ -360,6 +387,7 @@ This value controls what sound plays on push notification receive.
 Default: bingbong.aiff
 
 _________
+
 #### GCM_ENABLED
 
 This value controls whether the server will listen for and send Android push notifications
@@ -373,6 +401,7 @@ This value controls whether the server will listen for and send Android push not
 Default: false
 
 _________
+
 #### GCM_API_KEY
 
 This is the GCM granted api key used for calling the GCM API.
@@ -380,9 +409,9 @@ This is the GCM granted api key used for calling the GCM API.
 Default: foobar
 
 _________
+
 #### ANDROID_ERROR_QUEUE
 
 This value controls where Android push errors are stored for later retrieval.
 
 Default: Incus_Android_Error_Queue
- 
