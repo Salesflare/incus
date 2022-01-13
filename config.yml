@@ -29,6 +29,12 @@ redis_port_6379_tcp_addr: "localhost"
 redis_port_6379_tcp_port: 6379
 redis_port_6379_tcp_password: ""
 
+# Redis tls support
+redis_tls_enabled: false
+redis_tls_client_cert: "redis-client.pem"
+redis_tls_client_key: "redis-client-key.pem"
+redis_tls_client_root_ca: "redis-rootCa.pem"
+
 # If Redis is enabled, redis_message_channel is the Redis channel Incus will subscribe to for incoming messages from application.
 redis_message_channel: "Incus"
 
@@ -52,7 +58,7 @@ tls_port: "443"
 # Absolute path to certificate file.
 cert_file: "cert.pem"
 
-# Absoulte path to key file.
+# Absolute path to key file.
 key_file: "key.pem"
 
 # ----- Push Notification Support -----

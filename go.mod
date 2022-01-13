@@ -6,12 +6,14 @@ require (
 	github.com/PagerDuty/godspeed v0.0.0-20180224001232-122876cde329
 	github.com/alexjlockwood/gcm v0.0.0-20170125155202-532ebb3946fe
 	github.com/anachronistic/apns v0.0.0-20151129191123-91763352f7bf
-	github.com/garyburd/redigo v1.6.3
 	github.com/gorilla/websocket v1.4.2
 	github.com/spf13/viper v1.10.1
 )
 
-require github.com/stretchr/testify v1.7.0
+require (
+	github.com/gomodule/redigo v1.8.8
+	github.com/stretchr/testify v1.7.0
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

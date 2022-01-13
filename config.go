@@ -37,6 +37,13 @@ func NewConfig(configFilePath string) {
 		ConfigOption("redis_message_queue", "Incus_Queue")
 		ConfigOption("redis_activity_consumers", 8)
 		ConfigOption("redis_connection_pool_size", 20)
+
+		ConfigOption("redis_tls_enabled", false)
+		if viper.GetBool("redis_tls_enabled") {
+			fileOption(ConfigOption("redis_tls_client_cert_file", "redis-client.pem"))
+			fileOption(ConfigOption("redis_tls_client_key_file", "redis-client-key.pem"))
+			fileOption(ConfigOption("redis_tls_client_ca_file", "redis-rootCa.pem"))
+		}
 	}
 
 	ConfigOption("tls_enabled", false)

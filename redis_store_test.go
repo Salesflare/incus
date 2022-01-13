@@ -14,7 +14,7 @@ var (
 
 func newTestRedisStore() *RedisStore {
 	stats := &DiscardStats{}
-	store := newRedisStore(REDISHOST, REDISPORT, 5, 3, stats)
+	store := newRedisStore(REDISHOST, REDISPORT, "", redisTLSOption{enabled: false}, 5, 3, stats)
 	store.presenceDuration = 10
 	return store
 }

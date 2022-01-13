@@ -1,12 +1,15 @@
 package incus
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"time"
 
-	"github.com/garyburd/redigo/redis"
+	"github.com/gomodule/redigo/redis"
 	"github.com/spf13/viper"
 )
 
@@ -49,47 +52,49 @@ type redisPool struct {
 	connFn      func() (redis.Conn, error) // function to create new connection.
 }
 
-func newRedisStorePassword(redisPassword, redisHost string, redisPort, numberOfActivityConsumers, connPoolSize int, stats RuntimeStats) *RedisStore {
-
-	pool := &redisPool{
-		connections: make(chan redis.Conn, connPoolSize),
-		maxIdle:     connPoolSize,
-
-		connFn: func() (redis.Conn, error) {
-			client, err := redis.Dial("tcp", fmt.Sprintf("%s:%v", redisHost, redisPort), redis.DialPassword(redisPassword))
-			if err != nil {
-				log.Printf("Redis connect failed: %s\n", err.Error())
-				return nil, err
-			}
-
-			return client, nil
-		},
-	}
-
-	redisPendingQueue := NewRedisQueue(numberOfActivityConsumers, stats, pool)
-
-	return &RedisStore{
-		redisPendingQueue: redisPendingQueue,
-		clientsKey:        ClientsKey,
-		pageKey:           PageKey,
-		presenceKeyPrefix: PresenceKeyPrefix,
-		presenceDuration:  60,
-		server:            redisHost,
-		port:              redisPort,
-		pool:              pool,
-		pollingFreq:       time.Millisecond * 100,
-	}
-
+type redisTLSOption struct {
+	enabled      bool
+	certLocation string
+	keyLocation  string
+	caLocation   string
 }
 
-func newRedisStore(redisHost string, redisPort, numberOfActivityConsumers, connPoolSize int, stats RuntimeStats) *RedisStore {
+func newRedisStore(redisHost string, redisPort int, redisPassword string, redisTLSOptions redisTLSOption, numberOfActivityConsumers, connPoolSize int, stats RuntimeStats) *RedisStore {
+
+	options := []redis.DialOption{}
+	if len(redisPassword) > 0 {
+		options = append(options, redis.DialPassword(redisPassword))
+	}
+
+	if redisTLSOptions.enabled {
+		cert, err := tls.LoadX509KeyPair(redisTLSOptions.certLocation, redisTLSOptions.keyLocation)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		caCert, err := ioutil.ReadFile(redisTLSOptions.caLocation)
+		caCertPool := x509.NewCertPool()
+		caCertPool.AppendCertsFromPEM(caCert)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		options = append(options,
+			redis.DialTLSConfig(&tls.Config{
+				MinVersion:   tls.VersionTLS12,
+				Certificates: []tls.Certificate{cert},
+				RootCAs:      caCertPool,
+			}),
+			redis.DialUseTLS(true),
+		)
+	}
 
 	pool := &redisPool{
 		connections: make(chan redis.Conn, connPoolSize),
 		maxIdle:     connPoolSize,
 
 		connFn: func() (redis.Conn, error) {
-			client, err := redis.Dial("tcp", fmt.Sprintf("%s:%v", redisHost, redisPort))
+			client, err := redis.Dial("tcp", fmt.Sprintf("%s:%v", redisHost, redisPort), options...)
 			if err != nil {
 				log.Printf("Redis connect failed: %s\n", err.Error())
 				return nil, err
@@ -250,6 +255,11 @@ func (this *RedisStore) QueryIsUserActive(user string, nowTimestamp int64) (bool
 		userSortedSetKey := this.presenceKeyPrefix + ":" + user
 
 		reply, err := conn.Do("ZRANGEBYSCORE", userSortedSetKey, nowTimestamp-this.presenceDuration, nowTimestamp)
+
+		if err != nil {
+			log.Printf("error")
+			log.Printf(err.Error())
+		}
 
 		els := reply.([]interface{})
 
