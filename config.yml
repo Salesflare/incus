@@ -31,9 +31,9 @@ redis_port_6379_tcp_password: ""
 
 # Redis tls support
 redis_tls_enabled: false
-redis_tls_client_cert: "redis-client.pem"
-redis_tls_client_key: "redis-client-key.pem"
-redis_tls_client_root_ca: "redis-rootCa.pem"
+redis_tls_client_cert_file: "redis-client.pem"
+redis_tls_client_key_file: "redis-client-key.pem"
+redis_tls_client_ca_file: "redis-rootCa.pem"
 
 # If Redis is enabled, redis_message_channel is the Redis channel Incus will subscribe to for incoming messages from application.
 redis_message_channel: "Incus"
